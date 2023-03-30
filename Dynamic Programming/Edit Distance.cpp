@@ -1,40 +1,38 @@
 #include<bits/stdc++.h>
 using namespace std;
+    
 #define ll long long
-const int mod = 1e9 + 7;
+const int N = 1e6 + 7;
  
-int n;
-char grid[1001][1001]; 
+int dp[5001][5001];
  
-ll dp[1001][1001];
+int solve(int i, int j, string &s1, string &s2){
  
-ll func(int i, int j){
-    if (grid[1][1] == '*') return 0;
-    if(i == n && j == n) return 1;
-    if(i > n || j > n) return 0; 
+    if(i == s1.length() || j == s2.length()){
+        return max(s1.length() - i, s2.length() - j);
+    }
+ 
     if(dp[i][j] != -1) return dp[i][j];
  
-    ll ans = 0;
-    if(grid[i][j] != '*'){
-        if(grid[i + 1][j] != '*') ans += func(i + 1, j);
-        if(grid[i][j + 1] != '*') ans += func(i, j + 1);
+    int ans;
+    if(s1[i] == s2[j]){
+        ans = solve(i + 1, j + 1, s1, s2);
     }
-    return dp[i][j] = ans % mod;
+    else{
+        int op1 = 1 + solve(i, j + 1, s1, s2); //add
+        int op2 = 1 + solve(i + 1, j, s1, s2); //remove
+        int op3 = 1 + solve(i + 1, j + 1, s1, s2); //replace
+ 
+        ans = min({op1, op2, op3});
+    }
+    return dp[i][j] = ans;
 }
  
-    
-int main(){
-    
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    
+int main() {
+ 
     memset(dp, -1, sizeof dp);
- 
-    cin >> n;
-    for(int i = 1; i <= n; i++){
-        for(int j = 1; j <= n; j++){
-            cin >> grid[i][j];
-        }
-    }
-    cout << func(1, 1) << endl;
+    string s1, s2;
+    cin >> s1 >> s2;
+    cout << solve(0, 0, s1, s2);
 }
+ 
